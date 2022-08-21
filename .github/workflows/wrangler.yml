@@ -1,0 +1,23 @@
+name: Wrangler-Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Retrieve date
+        run: echo ::set-output name=CURRENT_DATE::$(date '+%Y-%m-%d')
+        id: date
+
+      - name: Publish
+        uses: cloudflare/wrangler-action@2.0.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          command: publish --compatibility-date ${{ steps.date.outputs.CURRENT_DATE }}
