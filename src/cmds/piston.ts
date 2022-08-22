@@ -17,7 +17,7 @@ const pistonClient = new PistonClient();
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'piston',
-	description: 'Run arbitrary code via Piston API',
+	description: 'Execute arbitrary code via Piston API',
 	options: [
 		{
 			name: 'language',
@@ -54,12 +54,12 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			type: InteractionResponseType.Modal,
 			data: {
 				custom_id: `piston:${language}:${file}:${hide}`,
-				title: `Run ${supportedMarkdown[language] ?? language} program`,
+				title: `Execute ${supportedMarkdown[language] ?? language} program`,
 				components: [
 					{
 						style: TextInputStyle.Paragraph,
 						label: 'Code',
-						placeholder: 'Code of the program to run',
+						placeholder: 'Code used for execution',
 						custom_id: 'code',
 						required: true,
 					},
@@ -120,7 +120,7 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 		const files: File[] = [];
 
 		const joinedOutput = [compile?.output, run.output].join('\n').trim();
-		let message = `Ran your ${language} (${version}) program; output below`;
+		let message = `Excecuted your ${language} (${version}) program; output is below`;
 
 		if (!file)
 			message += `\`\`\`\n${
