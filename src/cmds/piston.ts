@@ -54,7 +54,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			type: InteractionResponseType.Modal,
 			data: {
 				custom_id: `piston:${language}:${file}:${hide}`,
-				title: `Running ${language}`,
+				title: `Execute ${language} program`,
 				components: [
 					{
 						style: TextInputStyle.Paragraph,
