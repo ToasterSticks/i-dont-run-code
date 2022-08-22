@@ -4,7 +4,7 @@ import { supportedRuntimes } from '../util';
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'langs',
-	description: 'Display all supported languages for Piston',
+	description: 'Display all languages supported by Piston',
 	handler: async () => {
 		return {
 			type: InteractionResponseType.ChannelMessageWithSource,

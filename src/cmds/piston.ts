@@ -17,7 +17,7 @@ const pistonClient = new PistonClient();
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'piston',
-	description: 'Execute arbitrary code via Piston API',
+	description: 'Execute arbitrary code via Piston',
 	options: [
 		{
 			name: 'language',
