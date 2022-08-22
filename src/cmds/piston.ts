@@ -58,7 +58,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 				components: [
 					{
 						style: TextInputStyle.Paragraph,
-						label: 'Code',
+						label: 'Script',
 						placeholder: 'Code used for execution',
 						custom_id: 'code',
 						required: true,
