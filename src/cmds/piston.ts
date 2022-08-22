@@ -11,7 +11,7 @@ import {
 	TextInputStyle,
 } from 'discord-api-types/v10';
 import { PistonClient } from 'piston-api-client';
-import { getModalValue, getOption, supportedRuntimes } from '../util';
+import { getModalValue, getOption, supportedMarkdown, supportedRuntimes } from '../util';
 
 const pistonClient = new PistonClient();
 
@@ -54,7 +54,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			type: InteractionResponseType.Modal,
 			data: {
 				custom_id: `piston:${language}:${file}:${hide}`,
-				title: `Execute ${language} program`,
+				title: `Execute ${supportedMarkdown[language] ?? language} program`,
 				components: [
 					{
 						style: TextInputStyle.Paragraph,
@@ -128,7 +128,7 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 			}\`\`\``;
 		else files.push({ name: 'output.txt', data: joinedOutput });
 
-		files.push({ name: language, data: code });
+		files.push({ name: language + (supportedMarkdown[language] ? '' : '.txt'), data: code });
 		if (stdin) files.push({ name: 'stdin.txt', data: stdin });
 
 		body = formDataResponse({ content: message, files });
