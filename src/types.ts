@@ -6,11 +6,4 @@ declare global {
 	let currentEvent: FetchEvent;
 }
 
-export interface Runtime {
-	language: string;
-	version: string;
-	aliases: string[];
-	runtime?: string;
-}
-
 export {};

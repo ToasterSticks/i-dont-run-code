@@ -11,7 +11,7 @@ import {
 	TextInputStyle,
 } from 'discord-api-types/v10';
 import { PistonClient } from 'piston-api-client';
-import { getModalValue, getOption, getSupportedLanguages } from '../util';
+import { getModalValue, getOption, supportedRuntimes } from '../util';
 
 const pistonClient = new PistonClient();
 
@@ -28,9 +28,11 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	],
 	handler: async ({ data: { options } }) => {
 		const language = getOption<string>(options, 'language')!;
-		const supported = await getSupportedLanguages();
 
-		if (!supported.languages.includes(language) && !supported.aliases.includes(language))
+		if (
+			!supportedRuntimes.languages.includes(language) &&
+			!supportedRuntimes.aliases.includes(language)
+		)
 			return {
 				type: InteractionResponseType.ChannelMessageWithSource,
 				data: {
