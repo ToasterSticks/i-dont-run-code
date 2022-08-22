@@ -30,7 +30,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 		const language = getOption<string>(options, 'language')!;
 		const supported = await getSupportedLanguages();
 
-		if (!supported.languages.includes(language) && supported.aliases.includes(language))
+		if (!supported.languages.includes(language) && !supported.aliases.includes(language))
 			return {
 				type: InteractionResponseType.ChannelMessageWithSource,
 				data: {
