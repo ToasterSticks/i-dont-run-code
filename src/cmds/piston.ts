@@ -17,7 +17,7 @@ const pistonClient = new PistonClient();
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'piston',
-	description: 'Execute arbitrary via Piston API',
+	description: 'Execute arbitrary code via Piston API',
 	options: [
 		{
 			name: 'language',
@@ -25,9 +25,21 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			type: ApplicationCommandOptionType.String,
 			required: true,
 		},
+		{
+			name: 'file',
+			description: 'Whether to send the output contents in a file',
+			type: ApplicationCommandOptionType.Boolean,
+		},
+		{
+			name: 'hide',
+			description: 'Whether to hide the response',
+			type: ApplicationCommandOptionType.Boolean,
+		},
 	],
 	handler: async ({ data: { options } }) => {
-		const language = getOption<string>(options, 'language')!;
+		const language = getOption<string>(options, 'language')!.toLowerCase();
+		const file = getOption<boolean>(options, 'file') || '';
+		const hide = getOption<boolean>(options, 'hide') || '';
 
 		if (![...supportedRuntimes.languages, ...supportedRuntimes.aliases].includes(language))
 			return {
@@ -41,7 +53,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 		return {
 			type: InteractionResponseType.Modal,
 			data: {
-				custom_id: 'piston',
+				custom_id: `piston:${language}:${file}:${hide}`,
 				title: `Running ${language}`,
 				components: [
 					{
@@ -65,14 +77,6 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 						custom_id: 'args',
 						required: false,
 					},
-					{
-						style: TextInputStyle.Short,
-						label: 'Language (Prefilled)',
-						placeholder: "Language to use for execution (don't change this)",
-						custom_id: 'language',
-						value: language,
-						required: true,
-					},
 				].map((textInputData) => ({
 					type: ComponentType.ActionRow,
 					components: [{ ...textInputData, type: ComponentType.TextInput }],
@@ -83,7 +87,12 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	modal: async (interaction) => {
 		currentEvent.waitUntil(followUp(interaction));
 
-		return { type: InteractionResponseType.DeferredChannelMessageWithSource };
+		const hide = interaction.data.custom_id.split(':')[3];
+
+		return {
+			type: InteractionResponseType.DeferredChannelMessageWithSource,
+			data: { flags: hide ? MessageFlags.Ephemeral : 0 },
+		};
 	},
 };
 
@@ -94,7 +103,7 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 		.split(',')
 		.map((arg) => arg.trim());
 
-	const language = getModalValue(data, 'language')!;
+	const [, language, file] = data.custom_id.split(':');
 
 	const result = await pistonClient.execute({
 		language,
@@ -108,11 +117,20 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 
 	if (result.success && !('message' in result)) {
 		const { language, version, run, compile } = result.data;
-		const message = `Ran your ${language} (${version}) program; output below\n\`\`\`\n${
-			[compile?.output, run.output].filter((x) => x).join('\n') || 'No output'
-		}\`\`\``;
+		const files: File[] = [];
 
-		body = formDataResponse({ content: message, files: [{ name: language, data: code }] });
+		const joinedOutput = [compile?.output, run.output].join('\n').trim();
+		let message = `Ran your ${language} (${version}) program; output below`;
+
+		if (!file)
+			message += `\`\`\`\n${
+				joinedOutput.length > 1935 ? joinedOutput.slice(0, 1935) + '[…]' : joinedOutput || ' '
+			}\`\`\``;
+		else files.push({ name: 'output.txt', data: joinedOutput });
+
+		files.push({ name: language, data: code });
+
+		body = formDataResponse({ content: message, files });
 	} else {
 		body = JSON.stringify({ content: 'Something went wrong… Maybe try again?' });
 	}
