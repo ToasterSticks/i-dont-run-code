@@ -59,7 +59,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 					{
 						style: TextInputStyle.Paragraph,
 						label: 'Code',
-						placeholder: 'Code of the program to run',
+						placeholder: 'Code of the program to execute',
 						custom_id: 'code',
 						required: true,
 					},
@@ -120,7 +120,7 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 		const files: File[] = [];
 
 		const joinedOutput = [compile?.output, run.output].join('\n').trim();
-		let message = `Ran your ${language} (${version}) program; output below`;
+		let message = `Executed your ${language} (${version}) program; output below`;
 
 		if (!file)
 			message += `\`\`\`\n${
