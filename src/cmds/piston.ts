@@ -1,14 +1,17 @@
-import { Command } from 'cloudflare-discord-bot';
+import { Command, File } from 'cloudflare-discord-bot';
 import {
+	APIModalSubmitInteraction,
 	ApplicationCommandOptionType,
 	ApplicationCommandType,
 	ComponentType,
 	InteractionResponseType,
 	MessageFlags,
+	RESTPostAPIInteractionFollowupJSONBody,
+	Routes,
 	TextInputStyle,
 } from 'discord-api-types/v10';
 import { PistonClient } from 'piston-api-client';
-import { getModalValue, getOption } from '../util';
+import { getModalValue, getOption, supportedLanguages } from '../util';
 
 const pistonClient = new PistonClient();
 
@@ -25,6 +28,15 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	],
 	handler: ({ data: { options } }) => {
 		const language = getOption<string>(options, 'language')!;
+
+		if (!supportedLanguages.includes(language))
+			return {
+				type: InteractionResponseType.ChannelMessageWithSource,
+				data: {
+					content: `The language provided is not supported.`,
+					flags: MessageFlags.Ephemeral,
+				},
+			};
 
 		return {
 			type: InteractionResponseType.Modal,
@@ -68,40 +80,54 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			},
 		};
 	},
-	modal: async ({ data }) => {
-		const code = getModalValue(data, 'code')!;
-		const stdin = getModalValue(data, 'stdin')!;
-		const args = getModalValue(data, 'args')!
-			.split(',')
-			.map((arg) => arg.trim());
+	modal: async (interaction) => {
+		currentEvent.waitUntil(followUp(interaction));
 
-		const language = getModalValue(data, 'language')!;
-
-		const result = await pistonClient.execute({
-			language,
-			version: '*',
-			files: [{ content: code }],
-			args,
-			stdin,
-		});
-
-		if (result.success && !('message' in result)) {
-			const { language, version, run } = result.data;
-			const message = `Ran your ${language} (${version}) program; output below\n\`\`\`\n${run.output}\`\`\``;
-
-			return {
-				type: InteractionResponseType.ChannelMessageWithSource,
-				files: [{ name: language, data: code }],
-				data: { content: message },
-			};
-		}
-
-		return {
-			type: InteractionResponseType.ChannelMessageWithSource,
-			data: {
-				content: 'Something went wrong… Maybe try again?',
-				flags: MessageFlags.Ephemeral,
-			},
-		};
+		return { type: InteractionResponseType.DeferredChannelMessageWithSource };
 	},
+};
+
+const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
+	const code = getModalValue(data, 'code')!;
+	const stdin = getModalValue(data, 'stdin')!;
+	const args = getModalValue(data, 'args')!
+		.split(',')
+		.map((arg) => arg.trim());
+
+	const language = getModalValue(data, 'language')!;
+
+	const result = await pistonClient.execute({
+		language,
+		version: '*',
+		files: [{ content: code }],
+		args,
+		stdin,
+	});
+
+	let body: FormData | string;
+
+	if (result.success && !('message' in result)) {
+		const { language, version, run } = result.data;
+		const message = `Ran your ${language} (${version}) program; output below\n\`\`\`\n${run.output}\`\`\``;
+
+		body = formDataResponse({ content: message, files: [{ name: language, data: code }] });
+	} else {
+		body = JSON.stringify({ content: 'Something went wrong… Maybe try again?' });
+	}
+
+	return fetch('https://discord.com/api/v10' + Routes.webhook(CLIENT_ID, token), {
+		method: 'POST',
+		body,
+	});
+};
+
+const formDataResponse = (data: RESTPostAPIInteractionFollowupJSONBody & { files?: File[] }) => {
+	const formData = new FormData();
+
+	data.files?.forEach((file) => formData.append(file.name, new Blob([file.data]), file.name));
+	delete data.files;
+
+	formData.append('payload_json', JSON.stringify(data));
+
+	return formData;
 };
