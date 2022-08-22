@@ -91,7 +91,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 
 			return {
 				type: InteractionResponseType.ChannelMessageWithSource,
-				files: [{ name: `code.${language}`, data: code }],
+				files: [{ name: language, data: code }],
 				data: { content: message },
 			};
 		}
