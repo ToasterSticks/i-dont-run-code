@@ -1,7 +1,7 @@
-name = "i-run-apple"
-main = "dist/worker.js"
-account_id = "88e970e7c66a206dc1d32ad757af81c5"
+account_id  = "88e970e7c66a206dc1d32ad757af81c5"
+main        = "dist/worker.js"
+name        = "i-dont-run-code"
 workers_dev = true
 
 [build]
-command = "npm install && npm run build"
+  command = "npm install && npm run build"
