@@ -129,6 +129,7 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 		else files.push({ name: 'output.txt', data: joinedOutput });
 
 		files.push({ name: language, data: code });
+		if (stdin) files.push({ name: 'stdin.txt', data: stdin });
 
 		body = formDataResponse({ content: message, files });
 	} else {
