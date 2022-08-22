@@ -107,8 +107,10 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 	let body: FormData | string;
 
 	if (result.success && !('message' in result)) {
-		const { language, version, run } = result.data;
-		const message = `Ran your ${language} (${version}) program; output below\n\`\`\`\n${run.output}\`\`\``;
+		const { language, version, run, compile } = result.data;
+		const message = `Ran your ${language} (${version}) program; output below\n\`\`\`\n${
+			[compile?.output, run.output].filter((x) => x).join('\n') || 'No output'
+		}\`\`\``;
 
 		body = formDataResponse({ content: message, files: [{ name: language, data: code }] });
 	} else {
