@@ -11,6 +11,7 @@ const applicationCommandHandler = createApplicationCommandHandler({
 });
 
 addEventListener('fetch', async (event) => {
-	Object.defineProperty(globalThis, 'currentEvent', { value: event, configurable: true });
+	// @ts-expect-error
+	globalThis.currentEvent = event;
 	event.respondWith(applicationCommandHandler(event.request));
 });
