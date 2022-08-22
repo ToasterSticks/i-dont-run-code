@@ -120,7 +120,9 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 		const files: File[] = [];
 
 		const joinedOutput = [compile?.output, run.output].join('\n').trim();
-		let message = `Excecuted your ${language} (${version}) program; output is below`;
+		let message = `Excecuted your ${
+			supportedMarkdown[language] ?? language
+		} (${version}) program; output is below`;
 
 		if (!file)
 			message += `\`\`\`\n${
