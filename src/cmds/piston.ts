@@ -124,9 +124,13 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 			supportedMarkdown[language] ?? language
 		} (${version}) program; output is below`;
 
+		const charsRemaining = 2000 - 7 - message.length;
+
 		if (!file)
 			message += `\`\`\`\n${
-				joinedOutput.length > 1935 ? joinedOutput.slice(0, 1935) + '[…]' : joinedOutput || ' '
+				joinedOutput.length > charsRemaining
+					? joinedOutput.slice(0, charsRemaining - 3) + '[…]'
+					: joinedOutput || ' '
 			}\`\`\``;
 		else files.push({ name: 'output.txt', data: joinedOutput });
 
