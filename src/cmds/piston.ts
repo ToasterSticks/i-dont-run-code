@@ -10,10 +10,9 @@ import {
 	Routes,
 	TextInputStyle,
 } from 'discord-api-types/v10';
-import { PistonClient, PistonExecuteData } from 'piston-api-client';
-import { getModalValue, getOption, supportedMarkdown, supportedRuntimes } from '../util';
 
-const pistonClient = new PistonClient();
+import { PistonExecuteData, PistonReponse } from '../types';
+import { getModalValue, getOption, supportedMarkdown, supportedRuntimes } from '../util';
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'piston',
@@ -105,7 +104,7 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 
 	const [, language, file] = data.custom_id.split(':');
 
-	const result = await getPistonReponse({
+	const result = await retryUntilSuccess({
 		language,
 		version: '*',
 		files: [{ content: code }],
@@ -115,8 +114,9 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 
 	let body: FormData | string;
 
-	if (result.success && !result.data.message) {
-		const { language, version, run, compile } = result.data;
+	if ('message' in result) body = JSON.stringify({ content: result.message });
+	else {
+		const { language, version, run, compile } = result;
 
 		const files: File[] = [];
 
@@ -139,10 +139,6 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 		if (stdin) files.push({ name: 'stdin.txt', data: stdin });
 
 		body = formDataResponse({ content: reply, files });
-	} else if (result.success && result.data.message) {
-		body = JSON.stringify({ content: `An error occured: ${result.data.message}` });
-	} else {
-		body = JSON.stringify({ content: 'Something went wrong… Maybe try again?' });
 	}
 
 	return fetch('https://discord.com/api/v10' + Routes.webhook(CLIENT_ID, token), {
@@ -151,13 +147,18 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 	});
 };
 
-const getPistonReponse = async (
-	data: PistonExecuteData
-): ReturnType<typeof pistonClient.execute> => {
-	let res = await pistonClient.execute(data);
+const getPistonResponse = (data: PistonExecuteData) =>
+	fetch('https://emkc.org/api/v2/piston/execute', {
+		method: 'POST',
+		body: JSON.stringify(data),
+	}).then((res) => (res.status === 429 ? null : res.json())) as Promise<PistonReponse | null>;
 
-	while (res.success && res.data.message?.includes('Requests limited'))
-		res = await pistonClient.execute(data);
+const retryUntilSuccess = async (data: PistonExecuteData) => {
+	let res: Awaited<ReturnType<typeof getPistonResponse>>;
+
+	do {
+		res = await getPistonResponse(data);
+	} while (!res);
 
 	return res;
 };

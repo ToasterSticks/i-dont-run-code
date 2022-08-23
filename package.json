@@ -11,8 +11,7 @@
 		"lint": "eslint --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'"
 	},
 	"dependencies": {
-		"cloudflare-discord-bot": "github:ToasterSticks/cloudflare-discord-bot",
-		"piston-api-client": "^2.0.1"
+		"cloudflare-discord-bot": "github:ToasterSticks/cloudflare-discord-bot"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "3.14.1",
