@@ -10,7 +10,7 @@ import {
 	Routes,
 	TextInputStyle,
 } from 'discord-api-types/v10';
-import { PistonClient } from 'piston-api-client';
+import { PistonClient, PistonExecuteData } from 'piston-api-client';
 import { getModalValue, getOption, supportedMarkdown, supportedRuntimes } from '../util';
 
 const pistonClient = new PistonClient();
@@ -105,7 +105,7 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 
 	const [, language, file] = data.custom_id.split(':');
 
-	const result = await pistonClient.execute({
+	const result = await getPistonReponse({
 		language,
 		version: '*',
 		files: [{ content: code }],
@@ -149,6 +149,16 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 		method: 'POST',
 		body,
 	});
+};
+
+const getPistonReponse = async (
+	data: PistonExecuteData
+): ReturnType<typeof pistonClient.execute> => {
+	const res = await pistonClient.execute(data);
+	if (!res.success) return res;
+	if (res.data.message?.includes('Requests limited')) return getPistonReponse(data);
+
+	return res;
 };
 
 const formDataResponse = (data: RESTPostAPIInteractionFollowupJSONBody & { files?: File[] }) => {
