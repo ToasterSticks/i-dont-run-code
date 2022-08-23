@@ -7,3 +7,9 @@ declare global {
 }
 
 export {};
+
+declare module 'piston-api-client' {
+	interface PistonExecuteResult {
+		message?: string;
+	}
+}

@@ -115,19 +115,20 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 
 	let body: FormData | string;
 
-	if (result.success && !('message' in result)) {
+	if (result.success && !result.data.message) {
 		const { language, version, run, compile } = result.data;
+
 		const files: File[] = [];
 
 		const joinedOutput = [compile?.output, run.output].join('\n').trim();
-		let message = `Excecuted your ${
+		let reply = `Excecuted your ${
 			supportedMarkdown[language] ?? language
 		} (${version}) program; output is below`;
 
-		const charsRemaining = 2000 - 7 - message.length;
+		const charsRemaining = 2000 - 7 - reply.length;
 
 		if (!file)
-			message += `\`\`\`\n${
+			reply += `\`\`\`\n${
 				joinedOutput.length > charsRemaining
 					? joinedOutput.slice(0, charsRemaining - 3) + '[…]'
 					: joinedOutput || ' '
@@ -137,7 +138,9 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 		files.push({ name: language + (supportedMarkdown[language] ? '' : '.txt'), data: code });
 		if (stdin) files.push({ name: 'stdin.txt', data: stdin });
 
-		body = formDataResponse({ content: message, files });
+		body = formDataResponse({ content: reply, files });
+	} else if (result.success && result.data.message) {
+		body = JSON.stringify({ content: `An error occured: ${result.data.message}` });
 	} else {
 		body = JSON.stringify({ content: 'Something went wrong… Maybe try again?' });
 	}
