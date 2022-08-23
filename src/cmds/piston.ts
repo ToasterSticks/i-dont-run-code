@@ -154,9 +154,10 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 const getPistonReponse = async (
 	data: PistonExecuteData
 ): ReturnType<typeof pistonClient.execute> => {
-	const res = await pistonClient.execute(data);
-	if (!res.success) return res;
-	if (res.data.message?.includes('Requests limited')) return getPistonReponse(data);
+	let res = await pistonClient.execute(data);
+
+	while (res.success && res.data.message?.includes('Requests limited'))
+		res = await pistonClient.execute(data);
 
 	return res;
 };
