@@ -10,7 +10,7 @@ const applicationCommandHandler = createApplicationCommandHandler({
 	commands,
 });
 
-addEventListener('fetch', async (event) => {
+addEventListener('fetch', (event) => {
 	// @ts-expect-error
 	globalThis.currentEvent = event;
 	event.respondWith(applicationCommandHandler(event.request));
