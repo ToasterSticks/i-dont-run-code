@@ -155,7 +155,7 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 	});
 
 	if (followUpBody)
-		fetch(API_BASE + Routes.webhook(CLIENT_ID, token), {
+		await fetch(API_BASE + Routes.webhook(CLIENT_ID, token), {
 			method: 'POST',
 			body: followUpBody,
 		});
