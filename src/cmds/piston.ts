@@ -121,7 +121,7 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 		const files: File[] = [];
 
 		const joinedOutput = [compile?.output, run.output].join('\n').trim();
-		let reply = `Excecuted your ${
+		let reply = `Executed your ${
 			supportedMarkdown[language] ?? language
 		} (${version}) program; output is below`;
 
@@ -154,7 +154,7 @@ const getPistonResponse = (data: PistonExecuteData) =>
 	}).then((res) => (res.status === 429 ? null : res.json())) as Promise<PistonReponse | null>;
 
 const retryUntilSuccess = async (data: PistonExecuteData) => {
-	let res: Awaited<ReturnType<typeof getPistonResponse>>;
+	let res: PistonReponse | null;
 
 	do {
 		res = await getPistonResponse(data);
