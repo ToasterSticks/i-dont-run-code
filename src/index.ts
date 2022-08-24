@@ -11,7 +11,6 @@ const applicationCommandHandler = createApplicationCommandHandler({
 });
 
 addEventListener('fetch', (event) => {
-	// @ts-expect-error
-	globalThis.currentEvent = event;
+	event.waitUntil(new Promise(() => null));
 	event.respondWith(applicationCommandHandler(event.request));
 });

@@ -90,7 +90,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 		};
 	},
 	modal: async (interaction) => {
-		currentEvent.waitUntil(followUp(interaction));
+		followUp(interaction);
 
 		const hide = interaction.data.custom_id.split(':')[4];
 
