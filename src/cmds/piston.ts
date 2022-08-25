@@ -1,4 +1,4 @@
-import { Command, File } from 'cloudflare-discord-bot';
+import { Command, File } from '../http-interactions';
 import {
 	APIModalSubmitInteraction,
 	ApplicationCommandOptionType,

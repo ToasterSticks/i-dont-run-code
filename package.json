@@ -1,8 +1,7 @@
 {
-	"name": "worker-typescript-template",
+	"name": "i-run-apple",
 	"version": "1.0.0",
-	"description": "Cloudflare worker TypeScript template",
-	"license": "MIT OR Apache-2.0",
+	"description": "HTTP Discord interaction bot executing code",
 	"author": "author",
 	"main": "dist/worker.js",
 	"scripts": {
@@ -11,7 +10,9 @@
 		"lint": "eslint --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'"
 	},
 	"dependencies": {
-		"cloudflare-discord-bot": "github:ToasterSticks/cloudflare-discord-bot"
+		"buffer": "^6.0.3",
+		"itty-router": "^2.6.1",
+		"tweetnacl": "^1.0.3"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "3.14.1",

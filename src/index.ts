@@ -1,4 +1,4 @@
-import { createApplicationCommandHandler, Command } from 'cloudflare-discord-bot';
+import { createApplicationCommandHandler, Command } from './http-interactions';
 import { mapFiles } from './util';
 
 const commands = mapFiles<Command>(require.context('./cmds', false, /\.ts$/));

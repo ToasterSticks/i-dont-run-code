@@ -1,4 +1,4 @@
-import { Command } from 'cloudflare-discord-bot';
+import { Command } from '../http-interactions';
 import {
 	ApplicationCommandType,
 	InteractionResponseType,
