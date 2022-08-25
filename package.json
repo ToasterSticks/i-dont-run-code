@@ -12,6 +12,7 @@
 	"dependencies": {
 		"buffer": "^6.0.3",
 		"itty-router": "^2.6.1",
+		"p-queue": "^7.3.0",
 		"tweetnacl": "^1.0.3"
 	},
 	"devDependencies": {
@@ -40,7 +41,8 @@
 		],
 		"rules": {
 			"@typescript-eslint/no-non-null-assertion": "off",
-			"@typescript-eslint/ban-ts-comment": "off"
+			"@typescript-eslint/ban-ts-comment": "off",
+			"@typescript-eslint/no-explicit-any": "off"
 		}
 	}
 }

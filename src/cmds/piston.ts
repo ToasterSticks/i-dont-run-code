@@ -1,4 +1,3 @@
-import { Command, File } from '../http-interactions';
 import {
 	APIModalSubmitInteraction,
 	ApplicationCommandOptionType,
@@ -10,9 +9,17 @@ import {
 	Routes,
 	TextInputStyle,
 } from 'discord-api-types/v10';
+import PQueue from 'p-queue';
 
+import { Command, File } from '../http-interactions';
 import { PistonExecuteData, PistonReponse } from '../types';
 import { API_BASE, getModalValue, getOption, supportedMarkdown, supportedRuntimes } from '../util';
+
+const queue = new PQueue({
+	concurrency: 1,
+	interval: 300,
+	intervalCap: 1,
+});
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'piston',
@@ -110,13 +117,15 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 
 	const [, language, file, mobile, hide] = data.custom_id.split(':');
 
-	const result = await retryUntilSuccess({
-		language,
-		version: '*',
-		files: [{ content: code }],
-		args,
-		stdin,
-	});
+	const result = await queue.add(() =>
+		getPistonResponse({
+			language,
+			version: '*',
+			files: [{ content: code }],
+			args,
+			stdin,
+		})
+	);
 
 	let body: FormData | string;
 	let followUpBody: FormData | undefined;
@@ -167,17 +176,7 @@ const getPistonResponse = (data: PistonExecuteData) =>
 	fetch('https://emkc.org/api/v2/piston/execute', {
 		method: 'POST',
 		body: JSON.stringify(data),
-	}).then((res) => (res.status === 429 ? null : res.json())) as Promise<PistonReponse | null>;
-
-const retryUntilSuccess = async (data: PistonExecuteData) => {
-	let res: PistonReponse | null;
-
-	do {
-		res = await getPistonResponse(data);
-	} while (!res);
-
-	return res;
-};
+	}).then((res) => res.json()) as Promise<PistonReponse>;
 
 const formDataResponse = (data: RESTPostAPIInteractionFollowupJSONBody & { files?: File[] }) => {
 	const formData = new FormData();
