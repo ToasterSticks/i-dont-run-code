@@ -85,7 +85,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 					{
 						style: TextInputStyle.Short,
 						label: 'Args',
-						placeholder: 'Arguments to pass to the program (comma separated)',
+						placeholder: 'Arguments to pass to the program',
 						custom_id: 'args',
 						required: false,
 					},
@@ -111,9 +111,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 	const code = getModalValue(data, 'code')!;
 	const stdin = getModalValue(data, 'stdin')!;
-	const args = getModalValue(data, 'args')!
-		.split(',')
-		.map((arg) => arg.trim());
+	const args = getModalValue(data, 'args')!;
 
 	const [, language, file, mobile, hide] = data.custom_id.split(':');
 
@@ -122,8 +120,10 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 			language,
 			version: '*',
 			files: [{ content: code }],
-			args,
 			stdin,
+			args: [...args.matchAll(/(?<=^|\s)"((?:\\"|[^"])*)"(?=$|\s)|[^\s]+/g)].map(
+				(match) => match[1]?.replaceAll('\\"', '"') ?? match[0]
+			),
 		})
 	);
 
