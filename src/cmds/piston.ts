@@ -5,13 +5,12 @@ import {
 	ComponentType,
 	InteractionResponseType,
 	MessageFlags,
-	RESTPostAPIInteractionFollowupJSONBody,
 	Routes,
 	TextInputStyle,
 } from 'discord-api-types/v10';
 import PQueue from 'p-queue';
 
-import { Command, File } from '../http-interactions';
+import { Command, File, formDataResponse } from '../http-interactions';
 import { PistonExecuteData, PistonReponse } from '../types';
 import { API_BASE, getModalValue, getOption, supportedMarkdown, supportedRuntimes } from '../util';
 
@@ -178,17 +177,6 @@ const getPistonResponse = (data: PistonExecuteData) =>
 		method: 'POST',
 		body: JSON.stringify(data),
 	}).then((res) => res.json()) as Promise<PistonReponse>;
-
-const formDataResponse = (data: RESTPostAPIInteractionFollowupJSONBody & { files?: File[] }) => {
-	const formData = new FormData();
-
-	data.files?.forEach((file) => formData.append(file.name, new Blob([file.data]), file.name));
-	delete data.files;
-
-	formData.append('payload_json', JSON.stringify(data));
-
-	return formData;
-};
 
 const truncateOutputWithCodeblock = (str: string, charCountUsed = 0, lang = '') => {
 	const charsRemaining = 1993 - charCountUsed - lang.length;
