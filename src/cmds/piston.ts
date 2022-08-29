@@ -171,8 +171,6 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 			method: 'POST',
 			body: followUpBody,
 		});
-
-	return;
 };
 
 const getPistonResponse = (data: PistonExecuteData) =>
