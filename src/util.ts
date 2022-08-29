@@ -40,7 +40,7 @@ export const getModalValue = (data: APIModalSubmission, name: string) => {
 };
 
 export const supportedRuntimes = {
-	languages: [
+	languages: new Set([
 		'matl',
 		'bash',
 		'befunge93',
@@ -125,8 +125,8 @@ export const supportedRuntimes = {
 		'vyxal',
 		'yeethon',
 		'zig',
-	],
-	aliases: [
+	]),
+	aliases: new Set([
 		'sh',
 		'b93',
 		'bf',
@@ -300,7 +300,7 @@ export const supportedRuntimes = {
 		'v',
 		'yeethon3',
 		'zig',
-	],
+	]),
 };
 
 export const supportedMarkdown: Record<string, string> = {

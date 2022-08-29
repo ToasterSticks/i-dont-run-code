@@ -11,12 +11,14 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'langs',
 	description: 'Display all languages supported by Piston',
 	handler: async () => {
+		let list = '';
+
+		for (const lang of supportedRuntimes.languages) list += `\n- ${lang}`;
+
 		return {
 			type: InteractionResponseType.ChannelMessageWithSource,
 			data: {
-				content: `Supported languages\`\`\`${supportedRuntimes.languages
-					.map((s) => '- ' + s)
-					.join('\n')}\`\`\``,
+				content: `Supported languages\`\`\`${list.trim()}\`\`\``,
 				flags: MessageFlags.Ephemeral,
 			},
 		};

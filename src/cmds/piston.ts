@@ -53,7 +53,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 		const mobile = getOption<boolean>(options, 'mobile-output') || '';
 		const hide = getOption<boolean>(options, 'hide') || '';
 
-		if (![...supportedRuntimes.languages, ...supportedRuntimes.aliases].includes(language))
+		if (!supportedRuntimes.aliases.has(language) && !supportedRuntimes.languages.has(language))
 			return {
 				type: InteractionResponseType.ChannelMessageWithSource,
 				data: {
