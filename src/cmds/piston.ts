@@ -31,12 +31,12 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			required: true,
 		},
 		{
-			name: 'file',
+			name: 'file-output',
 			description: 'Whether to send the output contents in a file',
 			type: ApplicationCommandOptionType.Boolean,
 		},
 		{
-			name: 'mobile-output',
+			name: 'mobile-source-output',
 			description: 'Whether to send the source contents as text',
 			type: ApplicationCommandOptionType.Boolean,
 		},
@@ -48,8 +48,8 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	],
 	handler: async ({ data: { options } }) => {
 		const language = getOption<string>(options, 'language')!.toLowerCase();
-		const file = getOption<boolean>(options, 'file') || '';
-		const mobile = getOption<boolean>(options, 'mobile-output') || '';
+		const file = getOption<boolean>(options, 'file-output') || '';
+		const mobile = getOption<boolean>(options, 'mobile-source-output') || '';
 		const hide = getOption<boolean>(options, 'hide') || '';
 
 		if (!supportedRuntimes.aliases.has(language) && !supportedRuntimes.languages.has(language))
