@@ -56,7 +56,6 @@ export const interaction = ({
 }: {
 	publicKey: string;
 	commands: CommandStore;
-	components?: { [key: string]: InteractionHandler };
 }) => {
 	return async (request: Request): Promise<Response> => {
 		const validateRequest = makeValidator({ publicKey });
