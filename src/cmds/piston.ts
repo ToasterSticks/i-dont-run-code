@@ -7,12 +7,13 @@ import {
 	MessageFlags,
 	Routes,
 	TextInputStyle,
+	RouteBases,
 } from 'discord-api-types/v10';
 import PQueue from 'p-queue';
 
 import { Command, File, formDataResponse } from '../http-interactions';
 import { PistonExecuteData, PistonReponse } from '../types';
-import { API_BASE, getModalValue, getOption, supportedMarkdown, supportedRuntimes } from '../util';
+import { getModalValue, getOption, supportedMarkdown, supportedRuntimes } from '../util';
 
 const queue = new PQueue({
 	concurrency: 1,
@@ -160,13 +161,13 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 		}
 	}
 
-	await fetch(API_BASE + Routes.webhook(CLIENT_ID, token), {
+	await fetch(RouteBases.api + Routes.webhook(CLIENT_ID, token), {
 		method: 'POST',
 		body,
 	});
 
 	if (followUpBody)
-		await fetch(API_BASE + Routes.webhook(CLIENT_ID, token), {
+		await fetch(RouteBases.api + Routes.webhook(CLIENT_ID, token), {
 			method: 'POST',
 			body: followUpBody,
 		});

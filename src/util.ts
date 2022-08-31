@@ -7,8 +7,6 @@ import {
 	InteractionResponseType,
 } from 'discord-api-types/v10';
 
-export const API_BASE = 'https://discord.com/api/v10';
-
 export const mapFiles = <T>(context: __WebpackModuleApi.RequireContext) =>
 	context.keys().map<T>((path) => context(path).command);
 
