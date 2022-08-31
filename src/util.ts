@@ -5,10 +5,24 @@ import {
 	APIInteractionResponse,
 	APIModalSubmission,
 	InteractionResponseType,
+	RouteBases,
 } from 'discord-api-types/v10';
 
 export const mapFiles = <T>(context: __WebpackModuleApi.RequireContext) =>
 	context.keys().map<T>((path) => context(path).command);
+
+export const request = (route: string, method: string, body: FormData | unknown) => {
+	const requestOptions =
+		body instanceof FormData
+			? { method, body }
+			: {
+					method,
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(body),
+			  };
+
+	fetch(RouteBases.api + route, requestOptions);
+};
 
 export const deferUpdate = (): APIInteractionResponse => ({
 	type: InteractionResponseType.DeferredMessageUpdate,
