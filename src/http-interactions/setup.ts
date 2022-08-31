@@ -1,11 +1,16 @@
 import { Buffer } from 'buffer';
-import { RESTPostAPIChatInputApplicationCommandsJSONBody } from 'discord-api-types/v10';
+import {
+	OAuth2Routes,
+	RESTPostAPIChatInputApplicationCommandsJSONBody,
+	RouteBases,
+	Routes,
+} from 'discord-api-types/v10';
 import type { Application } from './handler';
 
 const btoa = (value: string) => Buffer.from(value, 'binary').toString('base64');
 
 const getAuthorizationCode = async (authedFetch: any) => {
-	const request = new Request('https://discord.com/api/oauth2/token', {
+	const request = new Request(OAuth2Routes.tokenURL, {
 		method: 'POST',
 		body: new URLSearchParams({
 			grant_type: 'client_credentials',
@@ -29,11 +34,8 @@ const getAuthorizationCode = async (authedFetch: any) => {
 };
 
 const resolveCommandsEndpoint = (applicationId: string, guildId?: string): string => {
-	const url = `https://discord.com/api/v8/applications/${applicationId}`;
-
-	if (guildId) return `${url}/guilds/${guildId}/commands`;
-
-	return `${url}/commands`;
+	if (guildId) return RouteBases.api + Routes.applicationGuildCommands(applicationId, guildId);
+	return RouteBases.api + Routes.applicationCommands(applicationId);
 };
 
 const createCommands = async (
