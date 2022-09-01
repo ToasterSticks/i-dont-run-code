@@ -21,7 +21,7 @@ export const request = (route: string, method: string, body: FormData | unknown)
 					body: JSON.stringify(body),
 			  };
 
-	fetch(RouteBases.api + route, requestOptions);
+	return fetch(RouteBases.api + route, requestOptions);
 };
 
 export const deferUpdate = (): APIInteractionResponse => ({
