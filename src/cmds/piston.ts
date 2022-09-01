@@ -135,15 +135,14 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 
 		const files: File[] = [];
 
-		const joinedOutput = (compile ? compile.output + '\n' : '') + run.output;
-		const trimmed = joinedOutput.trim();
+		const output = (compile ? compile.output + '\n' : '') + run.output;
 		let reply = `Executed your ${supportedMarkdown[language] ?? language} (${version}) program; ${
-			joinedOutput ? 'output is below' : 'no output received'
+			output ? 'output is below' : 'no output received'
 		}`;
 
-		if (joinedOutput) {
-			if (file) files.push({ name: 'output.txt', data: trimmed });
-			else reply += truncateOutputWithCodeblock(trimmed, reply.length);
+		if (output) {
+			if (file) files.push({ name: 'output.txt', data: output });
+			else reply += truncateOutputWithCodeblock(output, reply.length);
 		}
 
 		files.push({ name: language + (supportedMarkdown[language] ? '' : '.txt'), data: code });
@@ -174,7 +173,7 @@ const truncateOutputWithCodeblock = (str: string, charCountUsed = 0, lang = '') 
 	const charsRemaining = 1993 - charCountUsed - lang.length;
 
 	return `\`\`\`${lang}\n${
-		str.length > charsRemaining ? str.slice(0, charsRemaining - 3) + '[…]' : str || ' '
+		str.length > charsRemaining ? str.slice(0, charsRemaining - 3) + '[…]' : str
 	}\`\`\``;
 };
 
