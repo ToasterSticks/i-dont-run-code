@@ -135,7 +135,7 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 
 		const files: File[] = [];
 
-		const joinedOutput = [compile?.output, run.output].join('\n').slice(0, -1);
+		const joinedOutput = [compile?.output, run.output].join('\n');
 		const trimmed = joinedOutput.trim();
 		let reply = `Executed your ${supportedMarkdown[language] ?? language} (${version}) program; ${
 			joinedOutput ? 'output is below' : 'no output received'
