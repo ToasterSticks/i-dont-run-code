@@ -10,9 +10,15 @@ import {
 } from 'discord-api-types/v10';
 import PQueue from 'p-queue';
 
-import { Command, File, formDataResponse } from '../http-interactions';
-import { PistonExecuteData, PistonReponse } from '../types';
-import { getModalValue, getOption, supportedMarkdown, supportedRuntimes, request } from '../util';
+import { Command, File, formDataResponse } from '../../http-interactions';
+import { PistonExecuteData, PistonReponse } from '../../types';
+import {
+	getModalValue,
+	getOption,
+	supportedMarkdown,
+	supportedRuntimes,
+	request,
+} from '../../util';
 
 const queue = new PQueue({
 	concurrency: 1,

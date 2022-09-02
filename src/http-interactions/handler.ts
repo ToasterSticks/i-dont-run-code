@@ -7,7 +7,9 @@ import {
 	APIModalSubmitInteraction,
 	APIUserApplicationCommandInteraction,
 	ApplicationCommandType,
+	RESTPostAPIApplicationCommandsJSONBody,
 	RESTPostAPIChatInputApplicationCommandsJSONBody,
+	RESTPostAPIContextMenuApplicationCommandsJSONBody,
 } from 'discord-api-types/v10';
 import { setup } from './setup';
 import { authorize } from './authorize';
@@ -16,13 +18,27 @@ import { InteractionHandler } from './types';
 
 const router = Router();
 
-export interface Command<
+type CommandsJSONBody<
+	T extends
+		| ApplicationCommandType.ChatInput
+		| ApplicationCommandType.Message
+		| ApplicationCommandType.User
+		| unknown
+> = T extends ApplicationCommandType.ChatInput
+	? RESTPostAPIChatInputApplicationCommandsJSONBody
+	: T extends ApplicationCommandType.Message
+	? RESTPostAPIContextMenuApplicationCommandsJSONBody & { type: ApplicationCommandType.Message }
+	: T extends ApplicationCommandType.User
+	? RESTPostAPIContextMenuApplicationCommandsJSONBody & { type: ApplicationCommandType.User }
+	: RESTPostAPIApplicationCommandsJSONBody;
+
+export type Command<
 	T extends
 		| ApplicationCommandType.ChatInput
 		| ApplicationCommandType.Message
 		| ApplicationCommandType.User
 		| unknown = unknown
-> extends RESTPostAPIChatInputApplicationCommandsJSONBody {
+> = CommandsJSONBody<T> & {
 	handler: InteractionHandler<
 		T extends ApplicationCommandType.ChatInput
 			? APIChatInputApplicationCommandInteraction
@@ -34,7 +50,7 @@ export interface Command<
 	>;
 	modal?: InteractionHandler<APIModalSubmitInteraction>;
 	components?: Record<string, InteractionHandler<APIMessageComponentInteraction>>;
-}
+};
 
 export interface Application {
 	applicationId: string;

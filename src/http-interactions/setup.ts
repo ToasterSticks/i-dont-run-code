@@ -1,7 +1,7 @@
 import { Buffer } from 'buffer';
 import {
 	OAuth2Routes,
-	RESTPostAPIChatInputApplicationCommandsJSONBody,
+	RESTPostAPIApplicationCommandsJSONBody,
 	RouteBases,
 	Routes,
 } from 'discord-api-types/v10';
@@ -46,7 +46,7 @@ const createCommands = async (
 	}: {
 		applicationId: string;
 		guildId?: string;
-		commands: RESTPostAPIChatInputApplicationCommandsJSONBody[];
+		commands: RESTPostAPIApplicationCommandsJSONBody[];
 	},
 	bearer: string
 ): Promise<Response> => {

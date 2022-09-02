@@ -4,8 +4,8 @@ import {
 	MessageFlags,
 } from 'discord-api-types/v10';
 
-import { Command } from '../http-interactions';
-import { supportedRuntimes } from '../util';
+import { Command } from '../../http-interactions';
+import { supportedRuntimes } from '../../util';
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'langs',
