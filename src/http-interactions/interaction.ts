@@ -35,8 +35,10 @@ export const formDataResponse = (
 ) => {
 	const formData = new FormData();
 
-	data.files?.forEach((file) => formData.append(file.name, new Blob([file.data]), file.name));
-	delete data.files;
+	if (data.files) {
+		for (const file of data.files) formData.append(file.name, new Blob([file.data]), file.name);
+		delete data.files;
+	}
 
 	formData.append('payload_json', JSON.stringify(data));
 
