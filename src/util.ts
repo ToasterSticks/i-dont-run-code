@@ -41,8 +41,7 @@ export const getOption = <
 ): T | undefined => {
 	const option = options?.find((option) => option.name === name);
 
-	// @ts-expect-error
-	return option && ('value' in option ? option.value : option.options);
+	return option && (('value' in option ? option.value : option.options) as T);
 };
 
 export const getModalValue = (data: APIModalSubmission, name: string) => {
