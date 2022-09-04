@@ -1,7 +1,6 @@
+import type { APIModalSubmitInteraction, ApplicationCommandType } from 'discord-api-types/v10';
 import {
-	APIModalSubmitInteraction,
 	ApplicationCommandOptionType,
-	ApplicationCommandType,
 	ComponentType,
 	InteractionResponseType,
 	MessageFlags,
@@ -10,8 +9,9 @@ import {
 } from 'discord-api-types/v10';
 import PQueue from 'p-queue';
 
-import { Command, File, formDataResponse } from '../../http-interactions';
-import { PistonExecuteData, PistonReponse } from '../../types';
+import type { Command, File } from '../../http-interactions';
+import { formDataResponse } from '../../http-interactions';
+import type { PistonExecuteData, PistonReponse } from '../../types';
 import {
 	getModalValue,
 	getOption,

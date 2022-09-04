@@ -1,12 +1,11 @@
-import {
+import type {
 	APIApplicationCommandInteractionDataBasicOption,
 	APIApplicationCommandInteractionDataOption,
 	APIApplicationCommandInteractionDataSubcommandOption,
 	APIInteractionResponse,
 	APIModalSubmission,
-	InteractionResponseType,
-	RouteBases,
 } from 'discord-api-types/v10';
+import { InteractionResponseType, RouteBases } from 'discord-api-types/v10';
 
 export const mapFiles = <T>(context: __WebpackModuleApi.RequireContext) =>
 	context.keys().map<T>((path) => context(path).command);

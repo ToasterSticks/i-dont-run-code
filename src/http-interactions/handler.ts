@@ -1,5 +1,5 @@
 import { Router } from 'itty-router';
-import {
+import type {
 	APIApplicationCommandInteraction,
 	APIChatInputApplicationCommandInteraction,
 	APIMessageApplicationCommandInteraction,
@@ -14,7 +14,7 @@ import {
 import { setup } from './setup';
 import { authorize } from './authorize';
 import { interaction } from './interaction';
-import { InteractionHandler } from './types';
+import type { InteractionHandler } from './types';
 
 const router = Router();
 

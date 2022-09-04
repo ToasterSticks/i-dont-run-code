@@ -7,7 +7,7 @@
 	"scripts": {
 		"build": "webpack",
 		"format": "prettier --write  '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
-		"lint": "eslint --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'"
+		"lint": "eslint --fix --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'"
 	},
 	"dependencies": {
 		"buffer": "^6.0.3",
@@ -39,10 +39,15 @@
 			"typescript",
 			"prettier"
 		],
+		"parserOptions": {
+			"project": "./tsconfig.json"
+		},
 		"rules": {
 			"@typescript-eslint/no-non-null-assertion": "off",
 			"@typescript-eslint/ban-ts-comment": "off",
 			"@typescript-eslint/no-explicit-any": "off",
+			"@typescript-eslint/consistent-type-imports": "error",
+			"@typescript-eslint/consistent-type-exports": "error",
 			"one-var": [
 				"error",
 				"consecutive"

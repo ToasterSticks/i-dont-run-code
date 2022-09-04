@@ -1,4 +1,4 @@
-import { APIInteraction, APIInteractionResponse } from 'discord-api-types/v10';
+import type { APIInteraction, APIInteractionResponse } from 'discord-api-types/v10';
 
 export interface File {
 	name: string;

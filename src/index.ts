@@ -1,4 +1,5 @@
-import { createApplicationCommandHandler, Command } from './http-interactions';
+import type { Command } from './http-interactions';
+import { createApplicationCommandHandler } from './http-interactions';
 import { mapFiles } from './util';
 
 const commands = mapFiles<Command>(require.context('./cmds', true, /\.ts$/)),

@@ -1,10 +1,7 @@
-import {
-	ApplicationCommandType,
-	InteractionResponseType,
-	MessageFlags,
-} from 'discord-api-types/v10';
+import type { ApplicationCommandType } from 'discord-api-types/v10';
+import { InteractionResponseType, MessageFlags } from 'discord-api-types/v10';
 
-import { Command } from '../../http-interactions';
+import type { Command } from '../../http-interactions';
 import { supportedRuntimes } from '../../util';
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
