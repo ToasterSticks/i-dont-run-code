@@ -10,6 +10,7 @@
 		"lint": "eslint --fix --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'"
 	},
 	"dependencies": {
+		"discord-api-types": "0.37.5",
 		"buffer": "^6.0.3",
 		"itty-router": "^2.6.1",
 		"p-queue": "^7.3.0",
@@ -21,7 +22,6 @@
 		"@types/webpack-env": "1.18.0",
 		"@typescript-eslint/eslint-plugin": "5.33.0",
 		"@typescript-eslint/parser": "5.33.1",
-		"discord-api-types": "0.37.5",
 		"eslint": "7.32.0",
 		"eslint-config-prettier": "8.5.0",
 		"eslint-config-typescript": "3.0.0",
