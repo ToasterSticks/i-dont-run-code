@@ -10,7 +10,7 @@
 	},
 	"dependencies": {
 		"buffer": "^6.0.3",
-		"discord-api-types": "0.37.5",
+		"discord-api-types": "0.37.8",
 		"itty-router": "^2.6.1",
 		"p-queue": "^7.3.0",
 		"tweetnacl": "^1.0.3"
