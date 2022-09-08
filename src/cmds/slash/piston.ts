@@ -12,13 +12,7 @@ import PQueue from 'p-queue';
 import type { Command, File } from '../../http-interactions';
 import { formDataResponse } from '../../http-interactions';
 import type { PistonExecuteData, PistonReponse } from '../../types';
-import {
-	getModalValue,
-	getOption,
-	supportedMarkdown,
-	supportedRuntimes,
-	request,
-} from '../../util';
+import { getModalValue, getOption, supportedMarkdown, languages, request } from '../../util';
 
 const queue = new PQueue({
 	concurrency: 1,
@@ -58,7 +52,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			mobile = getOption<boolean>(options, 'mobile-source-output') || '',
 			hide = getOption<boolean>(options, 'hide') || '';
 
-		if (!supportedRuntimes.aliases.has(language) && !supportedRuntimes.languages.has(language))
+		if (!languages[language])
 			return {
 				type: InteractionResponseType.ChannelMessageWithSource,
 				data: {

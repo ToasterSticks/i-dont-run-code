@@ -2,7 +2,9 @@ import type { ApplicationCommandType } from 'discord-api-types/v10';
 import { InteractionResponseType, MessageFlags } from 'discord-api-types/v10';
 
 import type { Command } from '../../http-interactions';
-import { supportedRuntimes } from '../../util';
+import { languages } from '../../util';
+
+const unique = new Set(Object.values(languages));
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'langs',
@@ -10,7 +12,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	handler: async () => {
 		let list = '';
 
-		for (const lang of supportedRuntimes.languages) list += `\n- ${lang}`;
+		for (const lang of unique) list += `\n- ${lang}`;
 
 		return {
 			type: InteractionResponseType.ChannelMessageWithSource,
