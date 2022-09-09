@@ -43,7 +43,8 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 		{
 			name: 'hide',
 			description: 'Whether to hide the response',
-			type: ApplicationCommandOptionType.Boolean,
+			type: ApplicationCommandOptionType.Integer,
+			choices: [{ name: 'Yes', value: 1 }],
 		},
 	],
 	handler: async ({ data: { options } }) => {
