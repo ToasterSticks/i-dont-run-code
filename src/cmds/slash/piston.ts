@@ -33,12 +33,14 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 		{
 			name: 'file-output',
 			description: 'Whether to send the output contents in a file',
-			type: ApplicationCommandOptionType.Boolean,
+			type: ApplicationCommandOptionType.Integer,
+			choices: [{ name: 'Yes', value: 1 }],
 		},
 		{
 			name: 'mobile-source-output',
 			description: 'Whether to send the source contents as text',
-			type: ApplicationCommandOptionType.Boolean,
+			type: ApplicationCommandOptionType.Integer,
+			choices: [{ name: 'Yes', value: 1 }],
 		},
 		{
 			name: 'hide',
@@ -49,9 +51,9 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	],
 	handler: async ({ data: { options } }) => {
 		const language = getOption<string>(options, 'language')!.toLowerCase(),
-			file = getOption<boolean>(options, 'file-output') || '',
-			mobile = getOption<boolean>(options, 'mobile-source-output') || '',
-			hide = getOption<boolean>(options, 'hide') || '';
+			file = getOption<number>(options, 'file-output') ?? 0,
+			mobile = getOption<number>(options, 'mobile-source-output') ?? 0,
+			hide = getOption<number>(options, 'hide') ?? 0;
 
 		if (!languages[language])
 			return {
