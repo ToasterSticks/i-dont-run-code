@@ -1,5 +1,7 @@
 declare global {
-	const CLIENT_ID: string, CLIENT_SECRET: string, PUBLIC_KEY: string;
+	const CLIENT_ID: string;
+	const CLIENT_SECRET: string;
+	const PUBLIC_KEY: string;
 }
 
 export interface PistonExecuteData {

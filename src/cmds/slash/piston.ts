@@ -50,10 +50,10 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 		},
 	],
 	handler: async ({ data: { options } }) => {
-		const language = getOption<string>(options, 'language')!.toLowerCase(),
-			file = getOption<number>(options, 'file-output') ?? '',
-			mobile = getOption<number>(options, 'mobile-source-output') ?? '',
-			hide = getOption<number>(options, 'hide') ?? '';
+		const language = getOption<string>(options, 'language')!.toLowerCase();
+		const file = getOption<number>(options, 'file-output') ?? '';
+		const mobile = getOption<number>(options, 'mobile-source-output') ?? '';
+		const hide = getOption<number>(options, 'hide') ?? '';
 
 		if (!languages[language])
 			return {
@@ -111,69 +111,70 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 };
 
 const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
-		const code = getModalValue(data, 'code')!,
-			stdin = getModalValue(data, 'stdin')!,
-			args = [...getModalValue(data, 'args')!.matchAll(COMMAND_LINE_ARGS)].map(
-				(match) => match[1]?.replaceAll('\\"', '"') ?? match[0]
-			),
-			[, language, file, mobile, hide] = data.custom_id.split(':'),
-			result = await queue.add(() =>
-				getPistonResponse({
-					language,
-					version: '*',
-					files: [{ content: code }],
-					args,
-					stdin,
-				})
-			);
+	const code = getModalValue(data, 'code')!;
+	const stdin = getModalValue(data, 'stdin')!;
+	const args = [...getModalValue(data, 'args')!.matchAll(COMMAND_LINE_ARGS)].map(
+		(match) => match[1]?.replaceAll('\\"', '"') ?? match[0]
+	);
+	const [, language, file, mobile, hide] = data.custom_id.split(':');
+	const result = await queue.add(() =>
+		getPistonResponse({
+			language,
+			version: '*',
+			files: [{ content: code }],
+			args,
+			stdin,
+		})
+	);
 
-		let body: FormData | string, followUpBody: FormData | undefined;
+	let body: FormData | string;
+	let followUpBody: FormData | undefined;
 
-		if ('message' in result) body = JSON.stringify({ content: result.message });
-		else {
-			const { language, version, run, compile } = result,
-				files: File[] = [],
-				output = (compile ? compile.output + '\n' : '') + run.output;
-			let reply = `Executed your ${supportedMarkdown[language] ?? language} (${version}) program; ${
-				output ? 'output is below' : 'no output received'
-			}`;
+	if ('message' in result) body = JSON.stringify({ content: result.message });
+	else {
+		const { language, version, run, compile } = result;
+		const files: File[] = [];
+		const output = (compile ? compile.output + '\n' : '') + run.output;
+		let reply = `Executed your ${supportedMarkdown[language] ?? language} (${version}) program; ${
+			output ? 'output is below' : 'no output received'
+		}`;
 
-			if (output) {
-				if (file) files.push({ name: 'output.txt', data: output });
-				else reply += truncateOutputWithCodeblock(output, reply.length);
-			}
-
-			files.push({
-				name: 'script.' + (supportedMarkdown[language]?.toLowerCase() ?? 'txt'),
-				data: code,
-			});
-
-			if (stdin) files.push({ name: 'stdin.txt', data: stdin });
-
-			body = formDataResponse({ content: reply, files: mobile ? (file ? [files[0]] : []) : files });
-
-			if (mobile) {
-				followUpBody = formDataResponse({
-					content: truncateOutputWithCodeblock(code, 0, language),
-					files: files.slice(file ? 2 : 1),
-					flags: hide ? MessageFlags.Ephemeral : 0,
-				});
-			}
+		if (output) {
+			if (file) files.push({ name: 'output.txt', data: output });
+			else reply += truncateOutputWithCodeblock(output, reply.length);
 		}
 
-		await request(Routes.webhook(CLIENT_ID, token), 'POST', body);
-		if (followUpBody) await request(Routes.webhook(CLIENT_ID, token), 'POST', followUpBody);
-	},
-	getPistonResponse = (data: PistonExecuteData) =>
-		fetch('https://emkc.org/api/v2/piston/execute', {
-			method: 'POST',
-			body: JSON.stringify(data),
-		}).then((res) => res.json()) as Promise<PistonReponse>,
-	truncateOutputWithCodeblock = (str: string, charCountUsed = 0, lang = '') => {
-		const charsRemaining = 1993 - charCountUsed - lang.length;
+		files.push({
+			name: 'script.' + (supportedMarkdown[language]?.toLowerCase() ?? 'txt'),
+			data: code,
+		});
 
-		return `\`\`\`${lang}\n${
-			str.length > charsRemaining ? str.slice(0, charsRemaining - 3) + '[…]' : str
-		}\`\`\``;
-	},
-	COMMAND_LINE_ARGS = /(?<=^|\s)"((?:\\"|[^"])*)"(?=$|\s)|[^\s]+/g;
+		if (stdin) files.push({ name: 'stdin.txt', data: stdin });
+
+		body = formDataResponse({ content: reply, files: mobile ? (file ? [files[0]] : []) : files });
+
+		if (mobile) {
+			followUpBody = formDataResponse({
+				content: truncateOutputWithCodeblock(code, 0, language),
+				files: files.slice(file ? 2 : 1),
+				flags: hide ? MessageFlags.Ephemeral : 0,
+			});
+		}
+	}
+
+	await request(Routes.webhook(CLIENT_ID, token), 'POST', body);
+	if (followUpBody) await request(Routes.webhook(CLIENT_ID, token), 'POST', followUpBody);
+};
+const getPistonResponse = (data: PistonExecuteData) =>
+	fetch('https://emkc.org/api/v2/piston/execute', {
+		method: 'POST',
+		body: JSON.stringify(data),
+	}).then((res) => res.json()) as Promise<PistonReponse>;
+const truncateOutputWithCodeblock = (str: string, charCountUsed = 0, lang = '') => {
+	const charsRemaining = 1993 - charCountUsed - lang.length;
+
+	return `\`\`\`${lang}\n${
+		str.length > charsRemaining ? str.slice(0, charsRemaining - 3) + '[…]' : str
+	}\`\`\``;
+};
+const COMMAND_LINE_ARGS = /(?<=^|\s)"((?:\\"|[^"])*)"(?=$|\s)|[^\s]+/g;
