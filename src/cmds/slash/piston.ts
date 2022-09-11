@@ -143,7 +143,11 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 				else reply += truncateOutputWithCodeblock(output, reply.length);
 			}
 
-			files.push({ name: 'script.' + (supportedMarkdown[language] ?? 'txt'), data: code });
+			files.push({
+				name: 'script.' + (supportedMarkdown[language]?.toLowerCase() ?? 'txt'),
+				data: code,
+			});
+
 			if (stdin) files.push({ name: 'stdin.txt', data: stdin });
 
 			body = formDataResponse({ content: reply, files: mobile ? (file ? [files[0]] : []) : files });
