@@ -65,7 +65,7 @@ export const interaction = ({
 			try {
 				const interaction = (await request.json()) as APIInteraction;
 
-				let handler:
+				let exec:
 					| InteractionHandler<APIApplicationCommandInteraction>
 					| InteractionHandler<APIMessageComponentInteraction>
 					| InteractionHandler<APIModalSubmitInteraction>
@@ -77,25 +77,25 @@ export const interaction = ({
 					}
 					case InteractionType.ApplicationCommand: {
 						if (!interaction.data?.name) break;
-						handler = commands.get(interaction.data.name)?.handler;
+						exec = commands.get(interaction.data.name)?.exec;
 						break;
 					}
 					case InteractionType.MessageComponent: {
 						const commandInteraction = interaction.message.interaction;
 						if (!commandInteraction) break;
-						handler = commands.get(commandInteraction.name.split(' ')[0])?.components?.[
+						exec = commands.get(commandInteraction.name.split(' ')[0])?.components?.[
 							interaction.data.custom_id
 						];
 						break;
 					}
 					case InteractionType.ModalSubmit:
-						handler = commands.get(interaction.data.custom_id.split(':')[0])?.modal;
+						exec = commands.get(interaction.data.custom_id.split(':')[0])?.modal;
 						break;
 					case InteractionType.ApplicationCommandAutocomplete:
 				}
-				if (!handler) return new Response(null, { status: 500 });
+				if (!exec) return new Response(null, { status: 500 });
 				// @ts-expect-error
-				return createResponse(await handler(interaction));
+				return createResponse(await exec(interaction));
 			} catch {
 				return new Response(null, { status: 400 });
 			}

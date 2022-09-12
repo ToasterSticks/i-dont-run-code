@@ -9,7 +9,8 @@ const unique = new Set(Object.values(languages));
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'langs',
 	description: 'Display all languages supported by Piston',
-	handler: async () => {
+
+	exec: async () => {
 		let list = '';
 
 		for (const lang of unique) list += `\n- ${lang}`;

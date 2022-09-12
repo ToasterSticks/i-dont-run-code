@@ -39,7 +39,7 @@ export type Command<
 		| ApplicationCommandType.User
 		| unknown = unknown
 > = CommandsJSONBody<T> & {
-	handler: InteractionHandler<
+	exec: InteractionHandler<
 		T extends ApplicationCommandType.ChatInput
 			? APIChatInputApplicationCommandInteraction
 			: T extends ApplicationCommandType.Message

@@ -9,7 +9,8 @@ import type { Command } from '../../http-interactions';
 export const command: Command<ApplicationCommandType.Message> = {
 	type: ApplicationCommandType.Message,
 	name: 'View Raw',
-	handler: async (interaction) => {
+
+	exec: async (interaction) => {
 		const json = interaction.data.resolved.messages[interaction.data.target_id];
 		const formatted = JSON.stringify(json, null, 2);
 

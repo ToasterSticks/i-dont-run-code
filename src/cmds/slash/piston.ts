@@ -49,7 +49,8 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			choices: [{ name: 'Yes', value: 1 }],
 		},
 	],
-	handler: async ({ data: { options } }) => {
+
+	exec: async ({ data: { options } }) => {
 		const language = getOption<string>(options, 'language')!.toLowerCase();
 		const file = getOption<number>(options, 'file-output') ?? '';
 		const mobile = getOption<number>(options, 'mobile-source-output') ?? '';
