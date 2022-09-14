@@ -163,7 +163,7 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 		}
 	}
 
-	await request(Routes.webhook(CLIENT_ID, token), 'POST', body);
+	await request(Routes.webhookMessage(CLIENT_ID, token), 'PATCH', body);
 	if (followUpBody) await request(Routes.webhook(CLIENT_ID, token), 'POST', followUpBody);
 };
 const getPistonResponse = (data: PistonExecuteData) =>
