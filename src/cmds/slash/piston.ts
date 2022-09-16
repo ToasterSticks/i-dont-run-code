@@ -99,6 +99,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			},
 		};
 	},
+
 	modal: async (interaction) => {
 		followUp(interaction);
 
@@ -166,11 +167,13 @@ const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
 	await request(Routes.webhookMessage(CLIENT_ID, token), 'PATCH', body);
 	if (followUpBody) await request(Routes.webhook(CLIENT_ID, token), 'POST', followUpBody);
 };
+
 const getPistonResponse = (data: PistonExecuteData) =>
 	fetch('https://emkc.org/api/v2/piston/execute', {
 		method: 'POST',
 		body: JSON.stringify(data),
 	}).then((res) => res.json()) as Promise<PistonReponse>;
+
 const truncateOutputWithCodeblock = (str: string, charCountUsed = 0, lang = '') => {
 	const charsRemaining = 1993 - charCountUsed - lang.length;
 
@@ -178,4 +181,5 @@ const truncateOutputWithCodeblock = (str: string, charCountUsed = 0, lang = '') 
 		str.length > charsRemaining ? str.slice(0, charsRemaining - 3) + '[…]' : str
 	}\`\`\``;
 };
+
 const COMMAND_LINE_ARGS = /(?<=^|\s)"((?:\\"|[^"])*)"(?=$|\s)|[^\s]+/g;
