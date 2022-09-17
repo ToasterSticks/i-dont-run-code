@@ -65,7 +65,7 @@ export type CommandStore = Map<string, Command>;
 export const createApplicationCommandHandler = (application: Application) => {
 	const commands = application.commands.reduce(
 		(_commands, command) => _commands.set(command.name, command),
-		<CommandStore>new Map()
+		new Map() as CommandStore
 	);
 
 	router.get('/', authorize(application.applicationId));

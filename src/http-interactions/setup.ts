@@ -3,6 +3,7 @@ import {
 	RouteBases,
 	Routes,
 	type RESTPostAPIApplicationCommandsJSONBody,
+	type RESTPostOAuth2AccessTokenResult,
 } from 'discord-api-types/v10';
 import { Buffer } from 'buffer';
 import type { Application } from './handler';
@@ -24,7 +25,7 @@ const getAuthorizationCode = async (authedFetch: any) => {
 	if (!response.ok) throw new Error('Failed to request an Authorization code.');
 
 	try {
-		const data = await response.json<any>();
+		const data = await response.json<RESTPostOAuth2AccessTokenResult>();
 		return data.access_token;
 	} catch {
 		throw new Error('Failed to parse the Authorization code response.');
