@@ -1,4 +1,3 @@
-import type { APIModalSubmitInteraction, ApplicationCommandType } from 'discord-api-types/v10';
 import {
 	ApplicationCommandOptionType,
 	ComponentType,
@@ -6,13 +5,13 @@ import {
 	MessageFlags,
 	Routes,
 	TextInputStyle,
+	type APIModalSubmitInteraction,
+	type ApplicationCommandType,
 } from 'discord-api-types/v10';
 import PQueue from 'p-queue';
-
-import type { Command, File } from '../../http-interactions';
-import { formDataResponse } from '../../http-interactions';
+import { formDataResponse, type Command, type File } from '../../http-interactions';
 import type { PistonExecuteData, PistonReponse } from '../../types';
-import { getModalValue, getOption, supportedMarkdown, languages, request } from '../../util';
+import { getModalValue, getOption, languages, request, supportedMarkdown } from '../../util';
 
 const queue = new PQueue({
 	concurrency: 1,
@@ -172,7 +171,7 @@ const getPistonResponse = (data: PistonExecuteData) =>
 	fetch('https://emkc.org/api/v2/piston/execute', {
 		method: 'POST',
 		body: JSON.stringify(data),
-	}).then((res) => res.json()) as Promise<PistonReponse>;
+	}).then((res) => res.json<PistonReponse>());
 
 const truncateOutputWithCodeblock = (str: string, charCountUsed = 0, lang = '') => {
 	const charsRemaining = 1993 - charCountUsed - lang.length;

@@ -1,6 +1,10 @@
+import {
+	OAuth2Routes,
+	RouteBases,
+	Routes,
+	type RESTPostAPIApplicationCommandsJSONBody,
+} from 'discord-api-types/v10';
 import { Buffer } from 'buffer';
-import type { RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types/v10';
-import { OAuth2Routes, RouteBases, Routes } from 'discord-api-types/v10';
 import type { Application } from './handler';
 
 const btoa = (value: string) => Buffer.from(value, 'binary').toString('base64');
@@ -20,7 +24,7 @@ const getAuthorizationCode = async (authedFetch: any) => {
 	if (!response.ok) throw new Error('Failed to request an Authorization code.');
 
 	try {
-		const data: any = await response.json();
+		const data = await response.json<any>();
 		return data.access_token;
 	} catch {
 		throw new Error('Failed to parse the Authorization code response.');

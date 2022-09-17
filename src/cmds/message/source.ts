@@ -3,7 +3,6 @@ import {
 	InteractionResponseType,
 	MessageFlags,
 } from 'discord-api-types/v10';
-
 import type { Command } from '../../http-interactions';
 
 export const command: Command<ApplicationCommandType.Message> = {

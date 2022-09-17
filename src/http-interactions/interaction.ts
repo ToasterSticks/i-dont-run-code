@@ -1,13 +1,13 @@
+import {
+	InteractionType,
+	type APIApplicationCommandInteraction,
+	type APIInteraction,
+	type APIMessageComponentInteraction,
+	type APIModalSubmitInteraction,
+	type RESTPostAPIInteractionFollowupJSONBody,
+} from 'discord-api-types/v10';
 import nacl from 'tweetnacl';
 import { Buffer } from 'buffer';
-import type {
-	APIInteraction,
-	APIApplicationCommandInteraction,
-	APIMessageComponentInteraction,
-	APIModalSubmitInteraction,
-	RESTPostAPIInteractionFollowupJSONBody,
-} from 'discord-api-types/v10';
-import { InteractionType } from 'discord-api-types/v10';
 import type { File, InteractionHandler, InteractionHandlerReturn } from './types';
 import type { CommandStore } from './handler';
 
@@ -63,9 +63,9 @@ export const interaction = ({
 		try {
 			await validateRequest(request.clone());
 			try {
-				const interaction = (await request.json()) as APIInteraction;
+				const interaction = await request.json<APIInteraction>();
 
-				let exec:
+				let handler:
 					| InteractionHandler<APIApplicationCommandInteraction>
 					| InteractionHandler<APIMessageComponentInteraction>
 					| InteractionHandler<APIModalSubmitInteraction>
@@ -77,25 +77,30 @@ export const interaction = ({
 					}
 					case InteractionType.ApplicationCommand: {
 						if (!interaction.data?.name) break;
-						exec = commands.get(interaction.data.name)?.exec;
+						handler = commands.get(interaction.data.name)?.exec;
 						break;
 					}
 					case InteractionType.MessageComponent: {
 						const commandInteraction = interaction.message.interaction;
 						if (!commandInteraction) break;
-						exec = commands.get(commandInteraction.name.split(' ')[0])?.components?.[
+						handler = commands.get(commandInteraction.name.split(' ')[0])?.components?.[
 							interaction.data.custom_id
 						];
 						break;
 					}
 					case InteractionType.ModalSubmit:
-						exec = commands.get(interaction.data.custom_id.split(':')[0])?.modal;
+						handler = commands.get(interaction.data.custom_id.split(':')[0])?.modal;
 						break;
 					case InteractionType.ApplicationCommandAutocomplete:
 				}
-				if (!exec) return new Response(null, { status: 500 });
-				// @ts-expect-error
-				return createResponse(await exec(interaction));
+
+				if (!handler) return new Response(null, { status: 500 });
+
+				const response = await (handler as InteractionHandler<APIApplicationCommandInteraction>)(
+					interaction as APIApplicationCommandInteraction
+				);
+
+				return createResponse(response);
 			} catch {
 				return new Response(null, { status: 400 });
 			}
