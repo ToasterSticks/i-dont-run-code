@@ -34,14 +34,17 @@ export const getOption = <
 		| number
 		| boolean
 		| APIApplicationCommandInteractionDataBasicOption[]
-		| APIApplicationCommandInteractionDataSubcommandOption[]
+		| APIApplicationCommandInteractionDataSubcommandOption[],
+	R extends boolean = false
 >(
 	options: APIApplicationCommandInteractionDataOption[] | undefined,
 	name: string
-): T | undefined => {
+): R extends true ? T : T | null => {
 	const option = options?.find((option) => option.name === name);
 
-	return option && (('value' in option ? option.value : option.options) as T);
+	return ((option && ('value' in option ? option.value : option.options)) ?? null) as R extends true
+		? T
+		: T | null;
 };
 
 export const getModalValue = (data: APIModalSubmission, name: string) => {
