@@ -9,6 +9,7 @@ import { Buffer } from 'buffer';
 import type { Application } from './handler';
 
 const btoa = (value: string) => Buffer.from(value, 'binary').toString('base64');
+
 const getAuthorizationCode = async (authedFetch: any) => {
 	const request = new Request(OAuth2Routes.tokenURL, {
 		method: 'POST',
@@ -31,10 +32,12 @@ const getAuthorizationCode = async (authedFetch: any) => {
 		throw new Error('Failed to parse the Authorization code response.');
 	}
 };
+
 const resolveCommandsEndpoint = (applicationId: string, guildId?: string): string => {
 	if (guildId) return RouteBases.api + Routes.applicationGuildCommands(applicationId, guildId);
 	return RouteBases.api + Routes.applicationCommands(applicationId);
 };
+
 const createCommands = async (
 	{
 		applicationId,

@@ -26,6 +26,7 @@ const makeValidator =
 
 		if (!isValid) throw new Error('Invalid request');
 	};
+
 const isFileUpload = (data: InteractionHandlerReturn) => data.files && data.files.length > 0;
 
 export const formDataResponse = (
