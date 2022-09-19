@@ -1,4 +1,5 @@
 import {
+	ApplicationCommandOptionType,
 	InteractionResponseType,
 	RouteBases,
 	type APIApplicationCommandInteractionDataBasicOption,
@@ -38,9 +39,20 @@ export const getOption = <
 	R extends boolean = false
 >(
 	options: APIApplicationCommandInteractionDataOption[] | undefined,
-	name: string
+	name: string,
+	hoist = false
 ): R extends true ? T : T | null => {
-	const option = options?.find((option) => option.name === name);
+	let hoisted = options;
+
+	if (hoist && hoisted) {
+		if (hoisted[0]?.type === ApplicationCommandOptionType.SubcommandGroup)
+			hoisted = hoisted[0].options ?? [];
+
+		if (hoisted[0]?.type === ApplicationCommandOptionType.Subcommand)
+			hoisted = hoisted[0].options ?? [];
+	}
+
+	const option = hoisted?.find((option) => option.name === name);
 
 	return ((option && ('value' in option ? option.value : option.options)) ?? null) as R extends true
 		? T
