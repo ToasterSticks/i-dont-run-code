@@ -112,9 +112,9 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 };
 
 const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
-	const code = getModalValue(data, 'code')!;
-	const stdin = getModalValue(data, 'stdin')!;
-	const args = [...getModalValue(data, 'args')!.matchAll(COMMAND_LINE_ARGS)].map(
+	const code = getModalValue(data, 'code');
+	const stdin = getModalValue(data, 'stdin');
+	const args = [...getModalValue(data, 'args').matchAll(COMMAND_LINE_ARGS)].map(
 		(match) => match[1]?.replaceAll('\\"', '"') ?? match[0]
 	);
 	const [, language, file, mobile, hide] = data.custom_id.split(':');
