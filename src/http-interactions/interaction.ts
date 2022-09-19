@@ -1,7 +1,7 @@
 import {
 	InteractionType,
-	type APIApplicationCommandInteraction,
 	type APIInteraction,
+	type APIApplicationCommandInteraction,
 	type APIMessageComponentInteraction,
 	type APIModalSubmitInteraction,
 	type RESTPostAPIInteractionFollowupJSONBody,
@@ -64,7 +64,7 @@ export const interaction = ({
 		try {
 			await validateRequest(request.clone());
 			try {
-				const interaction = await request.json<APIInteraction>();
+				const interaction = (await request.json()) as APIInteraction;
 
 				let handler:
 					| InteractionHandler<APIApplicationCommandInteraction>

@@ -1,4 +1,3 @@
-import { Router } from 'itty-router';
 import type {
 	APIApplicationCommandInteraction,
 	APIChatInputApplicationCommandInteraction,
@@ -11,6 +10,7 @@ import type {
 	RESTPostAPIChatInputApplicationCommandsJSONBody,
 	RESTPostAPIContextMenuApplicationCommandsJSONBody,
 } from 'discord-api-types/v10';
+import { Router } from 'itty-router';
 import { setup } from './setup';
 import { authorize } from './authorize';
 import { interaction } from './interaction';
