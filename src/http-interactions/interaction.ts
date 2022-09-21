@@ -76,23 +76,30 @@ export const interaction = ({
 					case InteractionType.Ping: {
 						return createResponse({ type: 1 });
 					}
+
 					case InteractionType.ApplicationCommand: {
 						if (!interaction.data?.name) break;
-						handler = commands.get(interaction.data.name)?.exec;
+
+						const command = commands.get(interaction.data.name);
+						if (command) handler = command.exec;
 						break;
 					}
+
 					case InteractionType.MessageComponent: {
 						const commandInteraction = interaction.message.interaction;
 						if (!commandInteraction) break;
-						handler = commands.get(commandInteraction.name.split(' ')[0])?.components?.[
-							interaction.data.custom_id
-						];
+
+						const command = commands.get(commandInteraction.name.split(' ')[0]);
+						if (command?.components)
+							handler = command.components[interaction.data.custom_id.split(':')[0]];
 						break;
 					}
-					case InteractionType.ModalSubmit:
-						handler = commands.get(interaction.data.custom_id.split(':')[0])?.modal;
+
+					case InteractionType.ModalSubmit: {
+						const command = commands.get(interaction.data.custom_id.split(':')[0]);
+						if (command?.modal) handler = command.modal;
 						break;
-					case InteractionType.ApplicationCommandAutocomplete:
+					}
 				}
 
 				if (!handler) return new Response(null, { status: 500 });
