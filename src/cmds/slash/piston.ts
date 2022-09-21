@@ -99,10 +99,10 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 		};
 	},
 
-	modal: async (interaction) => {
-		followUp(interaction);
+	modal: async (interaction, args) => {
+		followUp(interaction, args);
 
-		const hide = interaction.data.custom_id.split(':')[4];
+		const hide = args[3];
 
 		return {
 			type: InteractionResponseType.DeferredChannelMessageWithSource,
@@ -111,13 +111,16 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	},
 };
 
-const followUp = async ({ data, token }: APIModalSubmitInteraction) => {
+const followUp = async (
+	{ data, token }: APIModalSubmitInteraction,
+	[language, file, mobile, hide]: string[]
+) => {
 	const code = getModalValue(data, 'code');
 	const stdin = getModalValue(data, 'stdin');
 	const args = [...getModalValue(data, 'args').matchAll(COMMAND_LINE_ARGS)].map(
 		(match) => match[1]?.replaceAll('\\"', '"') ?? match[0]
 	);
-	const [, language, file, mobile, hide] = data.custom_id.split(':');
+
 	const result = await queue.add(() =>
 		getPistonResponse({
 			language,

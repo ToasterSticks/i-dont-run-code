@@ -1,4 +1,9 @@
-import type { APIInteraction, APIInteractionResponse } from 'discord-api-types/v10';
+import type {
+	APIInteraction,
+	APIInteractionResponse,
+	APIMessageComponentInteraction,
+	APIModalSubmitInteraction,
+} from 'discord-api-types/v10';
 
 export interface File {
 	name: string;
@@ -11,5 +16,7 @@ export type InteractionHandlerReturn = APIInteractionResponse & {
 
 export type InteractionHandler<T extends APIInteraction = APIInteraction> = (
 	interaction: T,
-	...extra: any
+	...extra: T extends APIModalSubmitInteraction | APIMessageComponentInteraction
+		? [string[], ...any]
+		: any[]
 ) => InteractionHandlerReturn | Promise<InteractionHandlerReturn>;

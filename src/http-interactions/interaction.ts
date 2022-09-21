@@ -72,6 +72,8 @@ export const interaction = ({
 					| InteractionHandler<APIModalSubmitInteraction>
 					| undefined;
 
+				const customIdRestArgs: string[] = [];
+
 				switch (interaction.type) {
 					case InteractionType.Ping: {
 						return createResponse({ type: 1 });
@@ -90,13 +92,18 @@ export const interaction = ({
 						if (!commandInteraction) break;
 
 						const command = commands.get(commandInteraction.name.split(' ')[0]);
-						if (command?.components)
-							handler = command.components[interaction.data.custom_id.split(':')[0]];
+						if (command?.components) {
+							const [name, ...args] = interaction.data.custom_id.split(':');
+							customIdRestArgs.push(...args);
+							handler = command.components[name];
+						}
 						break;
 					}
 
 					case InteractionType.ModalSubmit: {
-						const command = commands.get(interaction.data.custom_id.split(':')[0]);
+						const [name, ...args] = interaction.data.custom_id.split(':');
+						customIdRestArgs.push(...args);
+						const command = commands.get(name);
 						if (command?.modal) handler = command.modal;
 						break;
 					}
@@ -105,7 +112,8 @@ export const interaction = ({
 				if (!handler) return new Response(null, { status: 500 });
 
 				const response = await (handler as InteractionHandler<APIApplicationCommandInteraction>)(
-					interaction as APIApplicationCommandInteraction
+					interaction as APIApplicationCommandInteraction,
+					customIdRestArgs
 				);
 
 				return createResponse(response);
