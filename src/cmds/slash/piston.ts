@@ -67,7 +67,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 		return {
 			type: InteractionResponseType.Modal,
 			data: {
-				custom_id: `piston:${language}:${file}:${mobile}:${hide}`,
+				custom_id: `${command.name}:${language}:${file}:${mobile}:${hide}`,
 				title: `Execute ${supportedMarkdown[language] ?? language} program`,
 				components: [
 					{
