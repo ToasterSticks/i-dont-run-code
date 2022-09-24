@@ -51,8 +51,16 @@
 			"@typescript-eslint/no-explicit-any": "off",
 			"@typescript-eslint/consistent-type-imports": "error",
 			"@typescript-eslint/consistent-type-exports": "error",
-			"prettier/prettier": "error",
 			"no-duplicate-imports": "error",
+			"prettier/prettier": [
+				"error",
+				{
+					"arrowParens": "always",
+					"printWidth": 100,
+					"singleQuote": true,
+					"useTabs": true
+				}
+			],
 			"one-var": [
 				"error",
 				"never"
