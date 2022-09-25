@@ -8,16 +8,9 @@ import {
 	type APIModalSubmitInteraction,
 	type ApplicationCommandType,
 } from 'discord-api-types/v10';
-import PQueue from 'p-queue';
 import { formDataResponse, type Command, type File } from '../../http-interactions';
 import type { PistonExecuteData, PistonResponse } from '../../types';
 import { getModalValue, getOption, languages, request, supportedMarkdown } from '../../util';
-
-const queue = new PQueue({
-	concurrency: 1,
-	interval: 300,
-	intervalCap: 1,
-});
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'piston',
@@ -121,15 +114,13 @@ const followUp = async (
 		(match) => match[1]?.replaceAll('\\"', '"') ?? match[0]
 	);
 
-	const result = await queue.add(() =>
-		getPistonResponse({
-			language,
-			version: '*',
-			files: [{ content: code }],
-			args,
-			stdin,
-		})
-	);
+	const result = await getPistonResponse({
+		language,
+		version: '*',
+		files: [{ content: code }],
+		args,
+		stdin,
+	});
 
 	let body: FormData | string;
 	let followUpBody: FormData | undefined;
