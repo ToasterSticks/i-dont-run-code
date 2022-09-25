@@ -10,7 +10,7 @@ import {
 } from 'discord-api-types/v10';
 import PQueue from 'p-queue';
 import { formDataResponse, type Command, type File } from '../../http-interactions';
-import type { PistonExecuteData, PistonReponse } from '../../types';
+import type { PistonExecuteData, PistonResponse } from '../../types';
 import { getModalValue, getOption, languages, request, supportedMarkdown } from '../../util';
 
 const queue = new PQueue({
@@ -170,11 +170,18 @@ const followUp = async (
 	if (followUpBody) await request(Routes.webhook(CLIENT_ID, token), 'POST', followUpBody);
 };
 
-const getPistonResponse = (data: PistonExecuteData) =>
-	fetch('https://emkc.org/api/v2/piston/execute', {
-		method: 'POST',
-		body: JSON.stringify(data),
-	}).then((res) => res.json<PistonReponse>());
+const getPistonResponse = async (data: PistonExecuteData) => {
+	let res: Response;
+
+	do
+		res = await fetch('https://emkc.org/api/v2/piston/execute', {
+			method: 'POST',
+			body: JSON.stringify(data),
+		});
+	while (res.status === 429);
+
+	return res.json<PistonResponse>();
+};
 
 const truncateOutputWithCodeblock = (str: string, charCountUsed = 0, lang = '') => {
 	const charsRemaining = 1993 - charCountUsed - lang.length;

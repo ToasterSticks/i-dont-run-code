@@ -20,7 +20,7 @@ export interface PistonExecuteData {
 	run_memory_limit?: number;
 }
 
-export type PistonReponse = PistonExecuteResult | { message: string };
+export type PistonResponse = PistonExecuteResult | { message: string };
 
 interface PistonExecuteResult {
 	language: string;
