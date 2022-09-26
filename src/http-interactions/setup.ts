@@ -58,7 +58,7 @@ const createCommands = async (
 	});
 
 	return fetch(request)
-		.then(() => new Response('OK'))
+		.then((res) => new Response(res.ok ? 'OK' : res.statusText, { status: res.status }))
 		.catch((e) => new Response(e.message, { status: 502 }));
 };
 
