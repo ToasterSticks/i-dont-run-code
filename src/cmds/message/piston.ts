@@ -1,59 +1,40 @@
 import {
-	ApplicationCommandOptionType,
+	type APIModalSubmitInteraction,
+	ApplicationCommandType,
 	ComponentType,
 	InteractionResponseType,
 	MessageFlags,
 	Routes,
 	TextInputStyle,
-	type APIModalSubmitInteraction,
-	type ApplicationCommandType,
 } from 'discord-api-types/v10';
+import { type Command, type File, formDataResponse } from '../../http-interactions';
 import {
 	COMMAND_LINE_ARGS,
 	getModalValue,
-	getOption,
 	getPistonResponse,
 	languages,
 	request,
 	supportedMarkdown,
 } from '../../util';
-import { formDataResponse, type Command, type File } from '../../http-interactions';
 
-export const command: Command<ApplicationCommandType.ChatInput> = {
-	name: 'piston',
-	description: 'Execute arbitrary code via Piston',
-	options: [
-		{
-			name: 'language',
-			description: 'The language to use for execution',
-			type: ApplicationCommandOptionType.String,
-			required: true,
-		},
-		{
-			name: 'file-output',
-			description: 'Whether to send the output contents in a file',
-			type: ApplicationCommandOptionType.Integer,
-			choices: [{ name: 'Yes', value: 1 }],
-		},
-		{
-			name: 'mobile-source-output',
-			description: 'Whether to send the source contents as text',
-			type: ApplicationCommandOptionType.Integer,
-			choices: [{ name: 'Yes', value: 1 }],
-		},
-		{
-			name: 'hide',
-			description: 'Whether to hide the response',
-			type: ApplicationCommandOptionType.Integer,
-			choices: [{ name: 'Yes', value: 1 }],
-		},
-	],
+export const command: Command<ApplicationCommandType.Message> = {
+	type: ApplicationCommandType.Message,
+	name: 'Run Piston Job',
 
-	exec: async ({ data: { options } }) => {
-		const language = getOption<string, true>(options, 'language').toLowerCase();
-		const file = getOption<number>(options, 'file-output') ?? '';
-		const mobile = getOption<number>(options, 'mobile-source-output') ?? '';
-		const hide = getOption<number>(options, 'hide') ?? '';
+	exec: async (interaction) => {
+		const apiMessage = interaction.data.resolved.messages[interaction.data.target_id];
+		const matches = apiMessage.content.match(/```([^\n]+)\n(.*?)```/s);
+
+		if (!matches)
+			return {
+				type: InteractionResponseType.ChannelMessageWithSource,
+				data: {
+					content: 'The message body does not match the required format.',
+					flags: MessageFlags.Ephemeral,
+				},
+			};
+
+		const [, language, body] = matches;
 
 		if (!languages[language])
 			return {
@@ -67,7 +48,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 		return {
 			type: InteractionResponseType.Modal,
 			data: {
-				custom_id: `${command.name}:${language}:${file}:${mobile}:${hide}`,
+				custom_id: `${command.name}:${language}`,
 				title: `Execute ${supportedMarkdown[language] ?? language} program`,
 				components: [
 					{
@@ -75,6 +56,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 						label: 'Script',
 						placeholder: 'Code used for execution',
 						custom_id: 'code',
+						value: body,
 						required: true,
 					},
 					{
@@ -111,10 +93,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	},
 };
 
-const followUp = async (
-	{ data, token }: APIModalSubmitInteraction,
-	[language, file, mobile, hide]: string[]
-) => {
+const followUp = async ({ data, token }: APIModalSubmitInteraction, [language]: string[]) => {
 	const code = getModalValue(data, 'code');
 	const stdin = getModalValue(data, 'stdin');
 	const args = [...getModalValue(data, 'args').matchAll(COMMAND_LINE_ARGS)].map(
@@ -142,8 +121,9 @@ const followUp = async (
 		}`;
 
 		if (output) {
-			if (file) files.push({ name: 'output.txt', data: output });
-			else reply += truncateOutputWithCodeblock(output, reply.length);
+			const charsRemaining = 1993 - reply.length;
+			if (output.length > charsRemaining) files.push({ name: 'output.txt', data: output });
+			else reply += `\`\`\`\n${output}\`\`\``;
 		}
 
 		files.push({
@@ -153,25 +133,9 @@ const followUp = async (
 
 		if (stdin) files.push({ name: 'stdin.txt', data: stdin });
 
-		body = formDataResponse({ content: reply, files: mobile ? (file ? [files[0]] : []) : files });
-
-		if (mobile) {
-			followUpBody = formDataResponse({
-				content: truncateOutputWithCodeblock(code, 0, language),
-				files: files.slice(file ? 2 : 1),
-				flags: hide ? MessageFlags.Ephemeral : 0,
-			});
-		}
+		body = formDataResponse({ content: reply, files });
 	}
 
 	await request(Routes.webhookMessage(CLIENT_ID, token), 'PATCH', body);
 	if (followUpBody) await request(Routes.webhook(CLIENT_ID, token), 'POST', followUpBody);
-};
-
-const truncateOutputWithCodeblock = (str: string, charCountUsed = 0, lang = '') => {
-	const charsRemaining = 1993 - charCountUsed - lang.length;
-
-	return `\`\`\`${lang}\n${
-		str.length > charsRemaining ? str.slice(0, charsRemaining - 3) + '[…]' : str
-	}\`\`\``;
 };

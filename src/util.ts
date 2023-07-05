@@ -8,6 +8,7 @@ import {
 	type APIInteractionResponse,
 	type APIModalSubmission,
 } from 'discord-api-types/v10';
+import type { PistonExecuteData, PistonResponse } from './types';
 
 export const mapFiles = <T>(context: __WebpackModuleApi.RequireContext) =>
 	context.keys().map<T>((path) => context(path).command);
@@ -59,10 +60,25 @@ export const getOption = <
 		: T | null;
 };
 
+export const COMMAND_LINE_ARGS = /(?<=^|\s)"((?:\\"|[^"])*)"(?=$|\s)|[^\s]+/g;
+
 export const getModalValue = (data: APIModalSubmission, name: string) => {
 	const row = data.components.find(({ components }) => components[0].custom_id === name)!;
 
 	return row.components[0].value;
+};
+
+export const getPistonResponse = async (data: PistonExecuteData) => {
+	let res: Response;
+
+	do
+		res = await fetch('https://emkc.org/api/v2/piston/execute', {
+			method: 'POST',
+			body: JSON.stringify(data),
+		});
+	while (res.status === 429);
+
+	return res.json<PistonResponse>();
 };
 
 export const languages: Record<string, string> = {

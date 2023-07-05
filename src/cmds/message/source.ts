@@ -10,8 +10,8 @@ export const command: Command<ApplicationCommandType.Message> = {
 	name: 'View Raw',
 
 	exec: async (interaction) => {
-		const json = interaction.data.resolved.messages[interaction.data.target_id];
-		const formatted = JSON.stringify(json, null, 2);
+		const apiMessage = interaction.data.resolved.messages[interaction.data.target_id];
+		const formatted = JSON.stringify(apiMessage, null, 2);
 
 		return {
 			type: InteractionResponseType.ChannelMessageWithSource,
