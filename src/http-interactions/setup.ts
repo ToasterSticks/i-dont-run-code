@@ -77,7 +77,11 @@ export const setup = ({ applicationId, applicationSecret, guildId, commands }: A
 					applicationId,
 					guildId,
 					// eslint-disable-next-line
-					commands: commands.map(({ exec: _, components: __, ...c }) => c),
+					commands: commands.map(({ exec: _, components: __, ...c }) => ({
+						...c,
+						integration_types: [0, 1],
+						contexts: [0, 1, 2],
+					})),
 				},
 				bearer
 			);
